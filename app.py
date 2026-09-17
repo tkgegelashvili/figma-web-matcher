@@ -193,7 +193,7 @@ if st.session_state.review_df is not None:
                     col_name = f"text_{lang}"
                     edited_df.loc[included.index, col_name] = [t.get(lang, "") for t in translations]
                 st.session_state.review_df = edited_df
-                st.success("Translations added below.")
+                st.toast("Translations added — your file is ready to export below.", icon="✅")
                 st.rerun()
             except AIError as e:
                 st.error(str(e))
