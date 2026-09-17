@@ -6,11 +6,14 @@ _extract_json strips that before parsing.
 """
 import json
 import re
+import time
 
 from google import genai
 from google.genai import types
 
 DEFAULT_MODEL = "gemini-3.6-flash"
+
+_TRANSIENT_RETRY_DELAYS = (2, 5, 10)  # seconds, for 503/overload/429 responses
 
 
 class AIError(Exception):
@@ -29,26 +32,34 @@ def _extract_json(text: str):
 
 
 def _call(api_key: str, model: str, contents: list, max_tokens: int = 8192) -> str:
-    try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model=model,
-            contents=contents,
-            config=types.GenerateContentConfig(
-                max_output_tokens=max_tokens,
-                thinking_config=types.ThinkingConfig(thinking_budget=0),
-            ),
-        )
-        if not response.text:
-            raise AIError("Gemini returned no output (the request may have been blocked).")
-        return response.text
-    except AIError:
-        raise
-    except Exception as e:
-        msg = str(e)
-        if "API_KEY_INVALID" in msg or "API key not valid" in msg or "PERMISSION_DENIED" in msg:
-            raise AIError("Google rejected the API key. Check it in the sidebar.")
-        raise AIError(f"Gemini API error: {e}")
+    client = genai.Client(api_key=api_key)
+    last_error = None
+    for attempt, delay in enumerate((0,) + _TRANSIENT_RETRY_DELAYS):
+        if delay:
+            time.sleep(delay)
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    max_output_tokens=max_tokens,
+                    thinking_config=types.ThinkingConfig(thinking_budget=0),
+                ),
+            )
+            if not response.text:
+                raise AIError("Gemini returned no output (the request may have been blocked).")
+            return response.text
+        except AIError:
+            raise
+        except Exception as e:
+            msg = str(e)
+            if "API_KEY_INVALID" in msg or "API key not valid" in msg or "PERMISSION_DENIED" in msg:
+                raise AIError("Google rejected the API key. Check it in the sidebar.")
+            is_transient = "503" in msg or "UNAVAILABLE" in msg or "429" in msg or "RESOURCE_EXHAUSTED" in msg
+            last_error = AIError(f"Gemini API error: {e}")
+            if not is_transient:
+                raise last_error
+    raise last_error
 
 
 def extract_keys_from_screenshot(
