@@ -15,6 +15,67 @@ from figma_client import FigmaError, fetch_figma_text_nodes, parse_figma_url
 
 st.set_page_config(page_title="Figma -> Web Content Matcher", layout="wide")
 
+st.markdown(
+    """
+    <style>
+    .stApp { background: #0a0a0a; }
+    [data-testid="stSidebar"] { background: #0a0a0a; border-right: 1px solid #2a2a2a; }
+    h1 {
+        text-align: center;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.2em;
+    }
+    .fwm-subtitle {
+        text-align: center;
+        color: #888;
+        max-width: 640px;
+        margin: 0 auto 2.2em auto;
+        line-height: 1.6;
+    }
+    .fwm-eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #666;
+        font-size: 0.75em;
+        margin-bottom: 1.5em;
+    }
+    div[data-testid="stTextInput"] input,
+    div[data-testid="stTextArea"] textarea {
+        background: #111 !important;
+        border: 1px solid #2a2a2a !important;
+        border-radius: 6px !important;
+        color: #e5e5e5 !important;
+    }
+    div[data-testid="stTextInput"] input::placeholder { color: #555 !important; }
+    [data-testid="stFileUploaderDropzone"] {
+        background: #111 !important;
+        border: 1px dashed #333 !important;
+        border-radius: 6px !important;
+    }
+    div[data-testid="stButton"] button, div[data-testid="stFormSubmitButton"] button {
+        border-radius: 999px !important;
+        border: 1px solid #333 !important;
+        background: #141414 !important;
+        color: #e5e5e5 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.8em;
+    }
+    div[data-testid="stButton"] button:hover {
+        border-color: #666 !important;
+        color: #fff !important;
+    }
+    button[kind="primary"] {
+        background: #e5e5e5 !important;
+        color: #0a0a0a !important;
+        border: 1px solid #e5e5e5 !important;
+    }
+    hr { border-color: #2a2a2a !important; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 if "review_df" not in st.session_state:
     st.session_state.review_df = None
 
@@ -58,10 +119,12 @@ with st.sidebar:
         help="Change this if Google renames/retires the default model.",
     )
 
-st.title("Figma -> Web Content Matcher")
-st.write(
-    "Match a staging page's placeholder content keys to the real copy in "
-    "your Figma design, review the matches, and export a CMS-ready file."
+st.markdown('<div class="fwm-eyebrow" style="text-align:center;">CONTENT MATCHING</div>', unsafe_allow_html=True)
+st.title("Figma → Web Content Matcher")
+st.markdown(
+    '<div class="fwm-subtitle">Match a staging page\'s placeholder content keys to the '
+    "real copy in your Figma design. Reviewed by a human, exported CMS-ready.</div>",
+    unsafe_allow_html=True,
 )
 
 category = st.text_input(
