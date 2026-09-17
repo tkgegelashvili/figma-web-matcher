@@ -41,10 +41,7 @@ def _call(api_key: str, model: str, contents: list, max_tokens: int = 8192) -> s
             response = client.models.generate_content(
                 model=model,
                 contents=contents,
-                config=types.GenerateContentConfig(
-                    max_output_tokens=max_tokens,
-                    thinking_config=types.ThinkingConfig(thinking_budget=0),
-                ),
+                config=types.GenerateContentConfig(max_output_tokens=max_tokens),
             )
             if not response.text:
                 raise AIError("Gemini returned no output (the request may have been blocked).")
