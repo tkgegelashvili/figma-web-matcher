@@ -31,6 +31,57 @@ def _extract_json(text: str):
         raise AIError(f"Model didn't return valid JSON: {e}\n\nRaw output:\n{text[:800]}")
 
 
+def _recover_truncated_matches(text: str):
+    """Best-effort salvage when a "matches" array got cut off mid-response
+    (output hit the token limit). Walks the raw text character by character,
+    keeping only complete {...} objects found before the truncation point,
+    so a large match run degrades to a partial result instead of failing
+    outright. Returns None if nothing usable could be recovered.
+    """
+    start = text.find('"matches"')
+    if start == -1:
+        return None
+    arr_start = text.find("[", start)
+    if arr_start == -1:
+        return None
+
+    matches = []
+    depth = 0
+    obj_start = None
+    in_string = False
+    escape = False
+    for i in range(arr_start + 1, len(text)):
+        ch = text[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            if depth == 0:
+                obj_start = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0 and obj_start is not None:
+                try:
+                    matches.append(json.loads(text[obj_start : i + 1]))
+                except json.JSONDecodeError:
+                    pass
+                obj_start = None
+        elif ch == "]" and depth == 0:
+            break
+
+    if not matches:
+        return None
+    return {"matches": matches, "unmatched_keys": [], "unmatched_figma_node_ids": []}
+
+
 def _call(api_key: str, model: str, contents: list, max_tokens: int = 8192) -> str:
     client = genai.Client(api_key=api_key)
     last_error = None
@@ -130,18 +181,34 @@ def match_keys_to_figma(
         "order to find the best semantic fit. Some keys may have no good match "
         "in Figma, and some Figma nodes may have no corresponding key — leave "
         "those unmatched rather than forcing a low-quality pairing.\n\n"
+        "Keep \"reasoning\" to 6 words or fewer - it's a UI hint, not an "
+        "explanation. This keeps the response short enough to never be cut "
+        "off, which matters more than a detailed rationale.\n\n"
         "Respond with ONLY this JSON object, no prose, no markdown fence:\n"
         "{\n"
         '  "matches": [\n'
         '    {"key": "...", "figma_node_id": "...", "figma_text": "...", '
-        '"confidence": "high|medium|low", "reasoning": "short reason"}\n'
+        '"confidence": "high|medium|low", "reasoning": "<=6 words"}\n'
         "  ],\n"
         '  "unmatched_keys": ["..."],\n'
         '  "unmatched_figma_node_ids": ["..."]\n'
         "}"
     )
-    raw = _call(api_key, model, [prompt])
-    result = _extract_json(raw)
+    raw = _call(api_key, model, [prompt], max_tokens=16384)
+    try:
+        result = _extract_json(raw)
+    except AIError:
+        recovered = _recover_truncated_matches(raw)
+        if recovered is None:
+            raise
+        # The response got cut off, so keys past the last complete match
+        # were never actually considered - list them as unmatched (rather
+        # than silently dropping them) so they still show up for review.
+        matched_key_names = {m.get("key") for m in recovered["matches"]}
+        recovered["unmatched_keys"] = [
+            k.get("key") for k in keys if k.get("key") not in matched_key_names
+        ]
+        result = recovered
     if not isinstance(result, dict) or "matches" not in result:
         raise AIError("Expected a JSON object with a 'matches' array from the matching step.")
     return result
