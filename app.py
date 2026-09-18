@@ -83,6 +83,9 @@ st.markdown(
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
     }}
     [data-testid="stFileUploaderDropzone"] svg {{ fill: {_t['muted2']} !important; }}
+    [data-testid="stFileUploaderDropzoneInstructions"] > div > span:first-child {{
+        display: none !important;
+    }}
     /* File chip keeps its own native dark background in every theme (by
        design) - only force the text/icon to a fixed light color so it stays
        readable against that dark chip regardless of the page theme. Covers
