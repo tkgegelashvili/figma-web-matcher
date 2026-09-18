@@ -75,13 +75,7 @@ st.markdown(
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
     }}
     div[data-testid="stTextInput"] input::placeholder {{ color: {_t['placeholder']} !important; }}
-    div[data-testid="stTextInput"] input {{ padding-right: 118px !important; }}
-    [data-testid="InputInstructions"] {{
-        background: linear-gradient(to right, transparent, {_t['input_bg']} 22px) !important;
-        padding-left: 22px !important;
-        color: {_t['placeholder']} !important;
-    }}
-    [data-testid="InputInstructions"] span {{ color: {_t['placeholder']} !important; }}
+    [data-testid="InputInstructions"] {{ display: none !important; }}
     [data-testid="stFileUploaderDropzone"] {{
         background: {_t['input_bg']} !important;
         border: 1px dashed {_t['border2']} !important;
@@ -157,17 +151,11 @@ with st.sidebar:
         figma_token = _hosted_figma_token
     else:
         st.caption("Used only for this session, in memory. Nothing is stored or logged.")
-        gemini_key = st.text_input(
-            "Gemini API key",
-            type="password",
-            help="Free at aistudio.google.com -> Get API key.",
-        )
+        gemini_key = st.text_input("Gemini API key", type="password")
+        st.caption("Free at aistudio.google.com -> Get API key.")
         figma_token = st.text_input("Figma personal access token", type="password")
-    model = st.text_input(
-        "Gemini model ID",
-        value=DEFAULT_MODEL,
-        help="Change this if Google renames/retires the default model.",
-    )
+    model = st.text_input("Gemini model ID", value=DEFAULT_MODEL)
+    st.caption("Change this if Google renames/retires the default model.")
 
 st.markdown('<div class="fwm-eyebrow" style="text-align:center;">CONTENT MATCHING</div>', unsafe_allow_html=True)
 st.title("Figma → Web Content Matcher")
@@ -177,11 +165,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-category = st.text_input(
-    "Category",
-    placeholder="e.g. dropshipping-stores",
-    help="CMS content category — applied to every row extracted from this batch.",
-)
+category = st.text_input("Category", placeholder="e.g. dropshipping-stores")
+st.caption("CMS content category — applied to every row extracted from this batch.")
 
 col1, col2 = st.columns(2)
 with col1:
@@ -193,8 +178,10 @@ with col2:
     screenshot = st.file_uploader(
         "Screenshot (or full-page PDF) of the staging page (showing placeholder keys)",
         type=["png", "jpg", "jpeg", "pdf"],
-        help="A PDF from your browser's Print -> Save as PDF usually captures the "
-        "whole page, not just what's visible on screen — use that for long pages.",
+    )
+    st.caption(
+        "A PDF from your browser's Print -> Save as PDF usually captures the "
+        "whole page, not just what's visible on screen — use that for long pages."
     )
 
 run = st.button("Extract & match", type="primary")
