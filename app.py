@@ -52,14 +52,14 @@ st.markdown(
         letter-spacing: 0.02em;
         margin-bottom: 0.2em;
     }}
-    .fwm-subtitle, .fwm-subtitle * {{
+    .stApp .fwm-subtitle, .stApp .fwm-subtitle * {{
         text-align: center;
         color: {_t['muted']} !important;
         max-width: 640px;
         margin: 0 auto 2.2em auto;
         line-height: 1.6;
     }}
-    .fwm-eyebrow, .fwm-eyebrow * {{
+    .stApp .fwm-eyebrow, .stApp .fwm-eyebrow * {{
         text-transform: uppercase;
         letter-spacing: 0.12em;
         color: {_t['muted2']} !important;
@@ -97,8 +97,8 @@ st.markdown(
        both stFileUploaderFile(Name/Icon) and the newer stFileChip(Name)
        testid, since local dev and Streamlit Cloud can run different
        Streamlit versions with different internal names. */
-    [data-testid="stFileUploaderFile"], [data-testid="stFileUploaderFile"] *,
-    [data-testid="stFileChip"], [data-testid="stFileChip"] * {{
+    .stApp [data-testid="stFileUploaderFile"], .stApp [data-testid="stFileUploaderFile"] *,
+    .stApp [data-testid="stFileChip"], .stApp [data-testid="stFileChip"] * {{
         color: #e5e5e5 !important;
     }}
     [data-testid="stFileUploaderFileIcon"] svg, [data-testid="stFileChip"] svg {{
@@ -106,8 +106,14 @@ st.markdown(
     }}
     /* Multiselect tags (e.g. translation language pills) always render on
        Streamlit's static primaryColor background regardless of our theme,
-       with white text baked in - force readable dark text instead. */
-    [data-baseweb="tag"], [data-baseweb="tag"] * {{ color: #0a0a0a !important; }}
+       with white text baked in - force readable dark text instead. Needs
+       the .stApp prefix so this beats ".stApp *:not(input)" below on
+       specificity (0,2,0 vs 0,1,1) - a plain "[data-baseweb=tag] *" rule
+       loses that fight and silently falls back to the theme text color,
+       which equals the tag's own background. */
+    .stApp [data-baseweb="tag"], .stApp [data-baseweb="tag"] * {{
+        color: #0a0a0a !important;
+    }}
     [data-testid="stMultiSelect"] [data-baseweb="select"] > div {{
         background: {_t['input_bg']} !important;
         border-color: {_t['border']} !important;
@@ -133,7 +139,8 @@ st.markdown(
     .stApp button:hover {{
         border-color: {_t['btn_hover']} !important;
     }}
-    [data-testid="baseButton-minimal"], button[title="Remove"] svg {{
+    .stApp [data-testid="baseButton-minimal"], .stApp [data-testid="stBaseButton-minimal"],
+    .stApp button[title="Remove"] svg {{
         color: {_t['muted2']} !important;
         fill: {_t['muted2']} !important;
     }}
@@ -271,7 +278,10 @@ if run:
                     }
                 )
 
-            st.session_state.review_df = pd.DataFrame(rows)
+            columns = ["category", "key", "matched_text_en", "confidence", "reasoning", "figma_node_id", "include"]
+            review_df = pd.DataFrame(rows, columns=columns)
+            review_df["include"] = review_df["include"].astype(bool)
+            st.session_state.review_df = review_df
             st.success(
                 f"Matched {len(matches)} of {len(keys)} keys. Review and correct below before exporting."
             )
