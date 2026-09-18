@@ -75,6 +75,13 @@ st.markdown(
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
     }}
     div[data-testid="stTextInput"] input::placeholder {{ color: {_t['placeholder']} !important; }}
+    div[data-testid="stTextInput"] input {{ padding-right: 118px !important; }}
+    [data-testid="InputInstructions"] {{
+        background: linear-gradient(to right, transparent, {_t['input_bg']} 22px) !important;
+        padding-left: 22px !important;
+        color: {_t['placeholder']} !important;
+    }}
+    [data-testid="InputInstructions"] span {{ color: {_t['placeholder']} !important; }}
     [data-testid="stFileUploaderDropzone"] {{
         background: {_t['input_bg']} !important;
         border: 1px dashed {_t['border2']} !important;
@@ -89,6 +96,8 @@ st.markdown(
         border-radius: 999px !important;
         border: 1px solid {_t['border2']} !important;
         background: {_t['bg2']} !important;
+    }}
+    .stApp button, .stApp button * {{
         color: {_t['text']} !important;
     }}
     div[data-testid="stButton"] button, div[data-testid="stFormSubmitButton"] button,
@@ -106,8 +115,10 @@ st.markdown(
     }}
     button[kind="primary"] {{
         background: {_t['accent']} !important;
-        color: {_t['accent_text']} !important;
         border: 1px solid {_t['accent']} !important;
+    }}
+    button[kind="primary"], button[kind="primary"] * {{
+        color: {_t['accent_text']} !important;
     }}
     hr {{ border-color: {_t['border']} !important; }}
     </style>
