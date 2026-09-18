@@ -86,6 +86,11 @@ st.markdown(
     [data-testid="stFileUploaderDropzoneInstructions"] > div > span:first-child {{
         display: none !important;
     }}
+    [data-testid="stFileUploaderDropzoneInstructions"] span {{
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }}
     /* File chip keeps its own native dark background in every theme (by
        design) - only force the text/icon to a fixed light color so it stays
        readable against that dark chip regardless of the page theme. Covers
