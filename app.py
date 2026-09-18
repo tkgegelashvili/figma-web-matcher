@@ -112,11 +112,15 @@ st.markdown(
     .stApp button, .stApp button * {{
         color: {_t['text']} !important;
     }}
-    div[data-testid="stButton"] button, div[data-testid="stFormSubmitButton"] button,
-    [data-testid="stFileUploaderDropzone"] button {{
+    div[data-testid="stButton"] button, div[data-testid="stFormSubmitButton"] button {{
         text-transform: uppercase;
         letter-spacing: 0.08em;
         font-size: 0.8em;
+    }}
+    [data-testid="stFileUploaderDropzone"] button {{
+        border-radius: 8px !important;
+        text-transform: none !important;
+        letter-spacing: normal !important;
     }}
     .stApp button:hover {{
         border-color: {_t['btn_hover']} !important;
