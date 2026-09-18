@@ -83,14 +83,20 @@ st.markdown(
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
     }}
     [data-testid="stFileUploaderDropzone"] svg {{ fill: {_t['muted2']} !important; }}
-    [data-testid="stFileUploaderFile"] {{
+    /* Streamlit renamed stFileUploaderFile(Name/Icon) -> stFileChip(Name) at
+       some point; style both since local dev and Streamlit Cloud can run
+       different Streamlit versions with different internal testids. */
+    [data-testid="stFileUploaderFile"], [data-testid="stFileChip"] {{
         background: {_t['input_bg']} !important;
         border-radius: 6px !important;
     }}
-    [data-testid="stFileUploaderFile"], [data-testid="stFileUploaderFile"] * {{
+    [data-testid="stFileUploaderFile"], [data-testid="stFileUploaderFile"] *,
+    [data-testid="stFileChip"], [data-testid="stFileChip"] * {{
         color: {_t['text']} !important;
     }}
-    [data-testid="stFileUploaderFileIcon"] svg {{ fill: {_t['muted2']} !important; }}
+    [data-testid="stFileUploaderFileIcon"] svg, [data-testid="stFileChip"] svg {{
+        fill: {_t['muted2']} !important;
+    }}
     /* Multiselect tags (e.g. translation language pills) always render on
        Streamlit's static primaryColor background regardless of our theme,
        with white text baked in - force readable dark text instead. */
