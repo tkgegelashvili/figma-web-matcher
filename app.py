@@ -176,7 +176,7 @@ with col1:
     )
 with col2:
     screenshot = st.file_uploader(
-        "Screenshot (or full-page PDF) of the staging page (showing placeholder keys)",
+        "Screenshot (or full-page PDF) of the staging page",
         type=["png", "jpg", "jpeg", "pdf"],
     )
     st.caption(
