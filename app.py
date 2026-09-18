@@ -83,19 +83,18 @@ st.markdown(
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
     }}
     [data-testid="stFileUploaderDropzone"] svg {{ fill: {_t['muted2']} !important; }}
-    /* Streamlit renamed stFileUploaderFile(Name/Icon) -> stFileChip(Name) at
-       some point; style both since local dev and Streamlit Cloud can run
-       different Streamlit versions with different internal testids. */
-    [data-testid="stFileUploaderFile"], [data-testid="stFileChip"] {{
-        background: {_t['input_bg']} !important;
-        border-radius: 6px !important;
-    }}
+    /* File chip keeps its own native dark background in every theme (by
+       design) - only force the text/icon to a fixed light color so it stays
+       readable against that dark chip regardless of the page theme. Covers
+       both stFileUploaderFile(Name/Icon) and the newer stFileChip(Name)
+       testid, since local dev and Streamlit Cloud can run different
+       Streamlit versions with different internal names. */
     [data-testid="stFileUploaderFile"], [data-testid="stFileUploaderFile"] *,
     [data-testid="stFileChip"], [data-testid="stFileChip"] * {{
-        color: {_t['text']} !important;
+        color: #e5e5e5 !important;
     }}
     [data-testid="stFileUploaderFileIcon"] svg, [data-testid="stFileChip"] svg {{
-        fill: {_t['muted2']} !important;
+        fill: #999999 !important;
     }}
     /* Multiselect tags (e.g. translation language pills) always render on
        Streamlit's static primaryColor background regardless of our theme,
