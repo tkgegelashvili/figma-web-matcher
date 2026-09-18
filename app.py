@@ -209,10 +209,6 @@ with col2:
         "Screenshot (or full-page PDF) of the staging page",
         type=["png", "jpg", "jpeg", "pdf"],
     )
-    st.caption(
-        "A PDF from your browser's Print -> Save as PDF usually captures the "
-        "whole page, not just what's visible on screen — use that for long pages."
-    )
 
 run = st.button("Extract & match", type="primary")
 
