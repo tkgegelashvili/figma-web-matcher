@@ -22,8 +22,8 @@ THEMES = {
     "Grey": dict(bg="#2a2a2a", bg2="#333333", input_bg="#383838", text="#eaeaea",
                  muted="#bbbbbb", muted2="#999999", border="#4a4a4a", border2="#555555",
                  placeholder="#888888", btn_hover="#cccccc", accent="#eaeaea", accent_text="#2a2a2a"),
-    "Light": dict(bg="#ffffff", bg2="#f5f5f5", input_bg="#fafafa", text="#111111",
-                  muted="#555555", muted2="#777777", border="#dddddd", border2="#cccccc",
+    "Light": dict(bg="#ffffff", bg2="#eeeeee", input_bg="#f7f7f7", text="#111111",
+                  muted="#555555", muted2="#777777", border="#dcdcdc", border2="#bbbbbb",
                   placeholder="#999999", btn_hover="#111111", accent="#111111", accent_text="#ffffff"),
 }
 
@@ -31,11 +31,11 @@ if "fwm_theme" not in st.session_state:
     st.session_state.fwm_theme = "Dark"
 
 with st.sidebar:
-    st.session_state.fwm_theme = st.radio(
+    st.radio(
         "Theme", list(THEMES.keys()),
-        index=list(THEMES.keys()).index(st.session_state.fwm_theme),
         horizontal=True,
         label_visibility="collapsed",
+        key="fwm_theme",
     )
 
 _t = THEMES[st.session_state.fwm_theme]
@@ -72,24 +72,37 @@ st.markdown(
         border: 1px solid {_t['border']} !important;
         border-radius: 6px !important;
         color: {_t['text']} !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
     }}
     div[data-testid="stTextInput"] input::placeholder {{ color: {_t['placeholder']} !important; }}
     [data-testid="stFileUploaderDropzone"] {{
         background: {_t['input_bg']} !important;
         border: 1px dashed {_t['border2']} !important;
         border-radius: 6px !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
     }}
-    div[data-testid="stButton"] button, div[data-testid="stFormSubmitButton"] button {{
+    [data-testid="stFileUploaderDropzone"] svg {{ fill: {_t['muted2']} !important; }}
+    [data-testid="stFileUploaderFile"] {{
+        background: transparent !important;
+    }}
+    .stApp button {{
         border-radius: 999px !important;
         border: 1px solid {_t['border2']} !important;
         background: {_t['bg2']} !important;
         color: {_t['text']} !important;
+    }}
+    div[data-testid="stButton"] button, div[data-testid="stFormSubmitButton"] button,
+    [data-testid="stFileUploaderDropzone"] button {{
         text-transform: uppercase;
         letter-spacing: 0.08em;
         font-size: 0.8em;
     }}
-    div[data-testid="stButton"] button:hover {{
+    .stApp button:hover {{
         border-color: {_t['btn_hover']} !important;
+    }}
+    [data-testid="baseButton-minimal"], button[title="Remove"] svg {{
+        color: {_t['muted2']} !important;
+        fill: {_t['muted2']} !important;
     }}
     button[kind="primary"] {{
         background: {_t['accent']} !important;
