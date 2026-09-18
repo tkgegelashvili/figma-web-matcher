@@ -6,6 +6,8 @@ app matches each key to the Figma text it should become, lets a human review
 and correct the matches, optionally translates to German/French, and exports
 CSV/Excel.
 """
+import re
+
 import pandas as pd
 import streamlit as st
 
@@ -354,18 +356,19 @@ if st.session_state.review_df is not None:
         else:
             export_df[lang] = ""
     export_df = export_df[["Category", "Message", "en", "de", "fr"]]
+    safe_name = re.sub(r"[^a-zA-Z0-9._-]+", "-", category.strip()).strip("-") or "content-matches"
     dl1, dl2 = st.columns(2)
     with dl1:
         st.download_button(
             "Download CSV",
             data=to_csv_bytes(export_df),
-            file_name="content-matches.csv",
+            file_name=f"{safe_name}.csv",
             mime="text/csv",
         )
     with dl2:
         st.download_button(
             "Download Excel",
             data=to_excel_bytes(export_df),
-            file_name="content-matches.xlsx",
+            file_name=f"{safe_name}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
