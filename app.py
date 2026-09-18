@@ -282,6 +282,7 @@ if run:
             review_df = pd.DataFrame(rows, columns=columns)
             review_df["include"] = review_df["include"].astype(bool)
             st.session_state.review_df = review_df
+            st.session_state.translations_done = False
             st.success(
                 f"Matched {len(matches)} of {len(keys)} keys. Review and correct below before exporting."
             )
@@ -329,10 +330,14 @@ if st.session_state.review_df is not None:
                     col_name = f"text_{lang}"
                     edited_df.loc[included.index, col_name] = [t.get(lang, "") for t in translations]
                 st.session_state.review_df = edited_df
+                st.session_state.translations_done = True
                 st.toast("Translations added — your file is ready to export below.", icon="✅")
                 st.rerun()
             except AIError as e:
                 st.error(str(e))
+
+    if st.session_state.get("translations_done"):
+        st.success("Translations added below — ready to export.")
 
     st.divider()
     st.caption(
