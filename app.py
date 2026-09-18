@@ -84,7 +84,20 @@ st.markdown(
     }}
     [data-testid="stFileUploaderDropzone"] svg {{ fill: {_t['muted2']} !important; }}
     [data-testid="stFileUploaderFile"] {{
-        background: transparent !important;
+        background: {_t['input_bg']} !important;
+        border-radius: 6px !important;
+    }}
+    [data-testid="stFileUploaderFile"], [data-testid="stFileUploaderFile"] * {{
+        color: {_t['text']} !important;
+    }}
+    [data-testid="stFileUploaderFileIcon"] svg {{ fill: {_t['muted2']} !important; }}
+    /* Multiselect tags (e.g. translation language pills) always render on
+       Streamlit's static primaryColor background regardless of our theme,
+       with white text baked in - force readable dark text instead. */
+    [data-baseweb="tag"], [data-baseweb="tag"] * {{ color: #0a0a0a !important; }}
+    [data-testid="stMultiSelect"] [data-baseweb="select"] > div {{
+        background: {_t['input_bg']} !important;
+        border-color: {_t['border']} !important;
     }}
     .stApp button {{
         border-radius: 999px !important;
