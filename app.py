@@ -15,62 +15,88 @@ from figma_client import FigmaError, fetch_figma_text_nodes, parse_figma_url
 
 st.set_page_config(page_title="Figma -> Web Content Matcher", layout="wide")
 
+THEMES = {
+    "Dark": dict(bg="#0a0a0a", bg2="#141414", input_bg="#111111", text="#e5e5e5",
+                 muted="#888888", muted2="#666666", border="#2a2a2a", border2="#333333",
+                 placeholder="#555555", btn_hover="#666666", accent="#e5e5e5", accent_text="#0a0a0a"),
+    "Grey": dict(bg="#2a2a2a", bg2="#333333", input_bg="#383838", text="#eaeaea",
+                 muted="#bbbbbb", muted2="#999999", border="#4a4a4a", border2="#555555",
+                 placeholder="#888888", btn_hover="#cccccc", accent="#eaeaea", accent_text="#2a2a2a"),
+    "Light": dict(bg="#ffffff", bg2="#f5f5f5", input_bg="#fafafa", text="#111111",
+                  muted="#555555", muted2="#777777", border="#dddddd", border2="#cccccc",
+                  placeholder="#999999", btn_hover="#111111", accent="#111111", accent_text="#ffffff"),
+}
+
+if "fwm_theme" not in st.session_state:
+    st.session_state.fwm_theme = "Dark"
+
+with st.sidebar:
+    st.session_state.fwm_theme = st.radio(
+        "Theme", list(THEMES.keys()),
+        index=list(THEMES.keys()).index(st.session_state.fwm_theme),
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+
+_t = THEMES[st.session_state.fwm_theme]
+
 st.markdown(
-    """
+    f"""
     <style>
-    .stApp { background: #0a0a0a; }
-    [data-testid="stSidebar"] { background: #0a0a0a; border-right: 1px solid #2a2a2a; }
-    h1 {
+    .stApp {{ background: {_t['bg']} !important; }}
+    [data-testid="stSidebar"] {{ background: {_t['bg']} !important; border-right: 1px solid {_t['border']}; }}
+    .stApp, .stApp *:not(input) {{ color: {_t['text']} !important; }}
+    .stApp input[type="radio"], .stApp input[type="checkbox"] {{ accent-color: {_t['accent']} !important; }}
+    h1 {{
         text-align: center;
         letter-spacing: 0.02em;
         margin-bottom: 0.2em;
-    }
-    .fwm-subtitle {
+    }}
+    .fwm-subtitle, .fwm-subtitle * {{
         text-align: center;
-        color: #888;
+        color: {_t['muted']} !important;
         max-width: 640px;
         margin: 0 auto 2.2em auto;
         line-height: 1.6;
-    }
-    .fwm-eyebrow {
+    }}
+    .fwm-eyebrow, .fwm-eyebrow * {{
         text-transform: uppercase;
         letter-spacing: 0.12em;
-        color: #666;
+        color: {_t['muted2']} !important;
         font-size: 0.75em;
         margin-bottom: 1.5em;
-    }
+    }}
     div[data-testid="stTextInput"] input,
-    div[data-testid="stTextArea"] textarea {
-        background: #111 !important;
-        border: 1px solid #2a2a2a !important;
+    div[data-testid="stTextArea"] textarea {{
+        background: {_t['input_bg']} !important;
+        border: 1px solid {_t['border']} !important;
         border-radius: 6px !important;
-        color: #e5e5e5 !important;
-    }
-    div[data-testid="stTextInput"] input::placeholder { color: #555 !important; }
-    [data-testid="stFileUploaderDropzone"] {
-        background: #111 !important;
-        border: 1px dashed #333 !important;
+        color: {_t['text']} !important;
+    }}
+    div[data-testid="stTextInput"] input::placeholder {{ color: {_t['placeholder']} !important; }}
+    [data-testid="stFileUploaderDropzone"] {{
+        background: {_t['input_bg']} !important;
+        border: 1px dashed {_t['border2']} !important;
         border-radius: 6px !important;
-    }
-    div[data-testid="stButton"] button, div[data-testid="stFormSubmitButton"] button {
+    }}
+    div[data-testid="stButton"] button, div[data-testid="stFormSubmitButton"] button {{
         border-radius: 999px !important;
-        border: 1px solid #333 !important;
-        background: #141414 !important;
-        color: #e5e5e5 !important;
+        border: 1px solid {_t['border2']} !important;
+        background: {_t['bg2']} !important;
+        color: {_t['text']} !important;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         font-size: 0.8em;
-    }
-    div[data-testid="stButton"] button:hover {
-        border-color: #666 !important;
-        color: #fff !important;
-    }
-    button[kind="primary"] {
-        background: #e5e5e5 !important;
-        color: #0a0a0a !important;
-        border: 1px solid #e5e5e5 !important;
-    }
-    hr { border-color: #2a2a2a !important; }
+    }}
+    div[data-testid="stButton"] button:hover {{
+        border-color: {_t['btn_hover']} !important;
+    }}
+    button[kind="primary"] {{
+        background: {_t['accent']} !important;
+        color: {_t['accent_text']} !important;
+        border: 1px solid {_t['accent']} !important;
+    }}
+    hr {{ border-color: {_t['border']} !important; }}
     </style>
     """,
     unsafe_allow_html=True,
